@@ -1,3 +1,20 @@
+var monthname = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+	function padding(topad)
+{
+    topad = topad.toString();
+    if (topad.length == 1)
+    {
+    topad = '0' + topad;
+    };
+    return topad;
+};
+function tempus()
+{
+    now = new Date();
+    document.getElementById("time").innerHTML = padding(now.getHours()) + ':' + padding(now.getMinutes()) + ':' + padding(now.getSeconds());
+    document.getElementById("date").innerHTML = now.getFullYear() + '年' + monthname[now.getMonth()] + '月' + now.getDate()+ '日';
+    setTimeout("tempus()", 1000);
+};
 $(function()
 {
 	//active snow
