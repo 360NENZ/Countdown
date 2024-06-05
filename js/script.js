@@ -350,3 +350,39 @@ $(function()
 				musicShow();
 			}
 		};
+// 设置结束时间的时间戳
+var endTime = new Date("2024/06/05 09:00:00").getTime();
+
+// 弹窗提示
+function showPopup() {
+  var overlay = document.createElement('div');
+  overlay.className = 'popup-overlay show-popup';
+  document.body.appendChild(overlay);
+
+  var popup = document.createElement('div');
+  popup.className = 'popup-content';
+  popup.innerText = '各位考生高考在即，愿你们以最饱满的热情、最坚定的信心、最冷静的头脑 \n 迎接这场人生的重要考验，每一科都能发挥出最好的水平，每一分都凝聚着你们过去无数个日夜的辛勤付出和汗水，\n愿你们在考场上如鱼得水、游刃有余，最终金榜题名，\n梦想成真，书写出属于自己的辉煌篇章，开启人生新的辉煌旅程！\n加油，你们一定可以的！ ';
+  document.body.appendChild(popup);
+
+  // 5秒后跳转
+  setTimeout(function() {
+    window.location.href = "https://xiaoyuban1213.github.io/gk2025/";
+    document.body.removeChild(overlay);
+    document.body.removeChild(popup);
+  }, 5000);
+} 
+
+// 设置定时器
+var timer = setInterval(function() {
+  // 获取当前时间的时间戳
+  var nowTime = new Date().getTime();
+  // 计算剩余的时间（毫秒）
+  var leftTime = endTime - nowTime;
+  // 计算剩余的秒数
+  var seconds = Math.floor(leftTime / 1000);
+  // 判断倒计时是否结束
+  if(seconds <= 0) {
+    clearInterval(timer);
+    showPopup(); // 显示弹窗
+  }
+}, 1000);
