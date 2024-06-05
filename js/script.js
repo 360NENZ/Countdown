@@ -368,7 +368,7 @@ $(function()
 			}
 		};
 // 设置结束时间的时间戳
-var endTime = new Date("2024/06/05 09:00:00").getTime();
+var endTime = new Date("2024/06/07 09:00:00").getTime();
 
 // 弹窗提示
 function showPopup() {
