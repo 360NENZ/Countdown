@@ -1462,3 +1462,38 @@ a, a:link, a:visited, a:hover, a:active
     			left: 15px;
     			border-color:  #66ccff transparent transparent;
     		}
+				/* 弹窗背景遮罩 */
+.popup-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+	display: none; /* 默认不显示 */
+	z-index: 1000; /* 确保在最上层 */
+  }
+  
+  /* 弹窗主体 */
+  .popup-content {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%); /* 居中显示 */
+	width: 75%;
+	padding: 30px;
+	background: #66ccff;
+	font-size: 35px; /* 设置字体大小 */
+	color: #ff0000; /* 设置字体颜色 */
+	font-weight: bold; /* 设置字体粗细 */
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	z-index: 1001; /* 确保在遮罩之上 */
+  }
+  
+  /* 显示弹窗 */
+  .show-popup {
+	display: block;
+  }
+  
