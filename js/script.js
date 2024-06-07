@@ -331,7 +331,7 @@ if (musicLyricContent.length > 0) {
   musicLyricDisplay.textContent = musicLyricContent[0].text;
 } else {
   musicLyricDisplay.textContent = '歌词载入中...';
-};
+}
 
 // 设置结束时间的时间戳
 var endTime = new Date("2024/06/07 09:00:00").getTime();
