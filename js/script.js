@@ -298,6 +298,7 @@ var musicLyricDisplay = document.getElementById('subtitle');
 var currentLineIndex = 0;
 
 // 更新歌词显示的函数
+
 function updateLyricDisplay() {
   const currentTime = Math.floor(musicPlayer.currentTime * 1000); // 取整到最近的毫秒
 
@@ -327,13 +328,14 @@ musicPlayer.addEventListener('play', function() {
 
 // 音乐播放结束时重置歌词
 musicPlayer.addEventListener('ended', function() {
-  musicPlayer.currentTime = 0; // 重置音乐播放时间
+  musicPlayer.currentTime = 1; // 重置音乐播放时间
 });
 
 // 初始化歌词显示
 if (musicLyricContent.length > 0) {
   musicLyricDisplay.textContent = musicLyricContent[0].text;
-}// 设置结束时间的时间戳
+}
+// 设置结束时间的时间戳
 var endTime = new Date("2024/06/09 09:00:00").getTime(); //在调试歌词显示
 
 // 弹窗提示
