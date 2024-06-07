@@ -298,8 +298,8 @@ var musicLyricDisplay = document.getElementById('subtitle');
 var currentLineIndex = 0;
 
 // 更新歌词显示的函数
-currentLineIndex = 0;
 function updateLyricDisplay() {
+currentLineIndex = 0;
   const currentTime = Math.floor(musicPlayer.currentTime * 1000); // 取整到最近的毫秒
 
   // 检查是否需要更新歌词行
