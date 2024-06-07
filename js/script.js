@@ -273,70 +273,60 @@ $(function()
 	
 });
 var musicCurrentTime = 0;
-var musicCurrentLine = -1; // 初始值设为-1，以便从第一句歌词开始
+var musicCurrentLine = 0;
 var musicOpacity = 1;
 
-var musicLyric = "[00:00.000]牛奶咖啡 - 明天，你好\n[00:01.000]作曲 : 王海涛\n[00:03.000]作词 : 牛奶咖啡\n[00:05.000]‘间奏’\n[00:23.080]看昨天的我们 走远了\n[00:28.030]在命运广场中央 等待\n[00:33.470]那模糊的 肩膀\n[00:36.310]越奔跑 越渺小\n[00:43.130]曾经 并肩往前的 伙伴\n[00:48.090]在举杯祝福后都 走散\n[00:53.500]只是那个 夜晚\n[00:56.300]我深深 的都留藏在心坎\n[01:00.710]长大以后 我只能奔跑\n[01:05.660]我多害怕 黑暗中跌倒\n[01:10.590]明天你好 含着泪微笑\n[01:15.930]越美好 越害怕得到\n[01:20.610]每一次哭 又笑着奔跑\n[01:25.630]一边失去 一边在寻找\n[01:30.500]明天你好 声音多渺小\n[01:35.570]却提醒我 勇敢是什么\n[02:03.130]当我朝着反方向走去\n[02:07.990]在楼梯的角落 找勇气\n[02:13.450]抖着肩膀 哭泣\n[02:16.260]问自己 在哪里\n[02:23.070]曾经 并肩往前 的伙伴\n[02:28.050]沉默着 懂得我的委屈\n[02:33.480]时间它总说谎\n[02:36.230]我从 不曾失去 那些肩膀\n[02:40.580]长大以后 我只能奔跑\n[02:45.510]我多害怕 黑暗中跌倒\n[02:50.480]明天你好 含着泪微笑\n[02:56.080]越美好 越害怕得到\n[03:00.530]每一次哭 又笑着奔跑\n[03:05.520]一边失去 一边在寻找\n[03:10.490]明天你好 声音多渺小\n[03:15.660]却提醒我\n[03:20.620]长大以后 我只能奔跑\n[03:25.590]我多害怕 黑暗中跌倒\n[03:30.590]明天你好 含着泪微笑\n[03:36.010]越美好 越害怕得到\n[03:40.380]每一次哭 又笑着奔跑\n[03:45.560]一边失去 一边在寻找\n[03:50.520]明天你好 声音多渺小\n[03:55.570]却提醒我\n[04:00.380]勇敢是什么\n[04:05.380]‘间奏’"; // 歌词内容，省略以节省空间
+// 假设musicLyric是预先定义好的歌词字符串
+var musicLyric = `[00:00.000]牛奶咖啡 - 明天，你好\n[00:01.000]作曲 : 王海涛\n[00:03.000]作词 : 牛奶咖啡\n[00:05.000]‘间奏’\n[00:23.080]看昨天的我们 走远了\n[00:28.030]在命运广场中央 等待\n[00:33.470]那模糊的 肩膀\n[00:36.310]越奔跑 越渺小\n[00:43.130]曾经 并肩往前的 伙伴\n[00:48.090]在举杯祝福后都 走散\n[00:53.500]只是那个 夜晚\n[00:56.300]我深深 的都留藏在心坎\n[01:00.710]长大以后 我只能奔跑\n[01:05.660]我多害怕 黑暗中跌倒\n[01:10.590]明天你好 含着泪微笑\n[01:15.930]越美好 越害怕得到\n[01:20.610]每一次哭 又笑着奔跑\n[01:25.630]一边失去 一边在寻找\n[01:30.500]明天你好 声音多渺小\n[01:35.570]却提醒我 勇敢是什么\n[02:03.130]当我朝着反方向走去\n[02:07.990]在楼梯的角落 找勇气\n[02:13.450]抖着肩膀 哭泣\n[02:16.260]问自己 在哪里\n[02:23.070]曾经 并肩往前 的伙伴\n[02:28.050]沉默着 懂得我的委屈\n[02:33.480]时间它总说谎\n[02:36.230]我从 不曾失去 那些肩膀\n[02:40.580]长大以后 我只能奔跑\n[02:45.510]我多害怕 黑暗中跌倒\n[02:50.480]明天你好 含着泪微笑\n[02:56.080]越美好 越害怕得到\n[03:00.530]每一次哭 又笑着奔跑\n[03:05.520]一边失去 一边在寻找\n[03:10.490]明天你好 声音多渺小\n[03:15.660]却提醒我\n[03:20.620]长大以后 我只能奔跑\n[03:25.590]我多害怕 黑暗中跌倒\n[03:30.590]明天你好 含着泪微笑\n[03:36.010]越美好 越害怕得到\n[03:40.380]每一次哭 又笑着奔跑\n[03:45.560]一边失去 一边在寻找\n[03:50.520]明天你好 声音多渺小\n[03:55.570]却提醒我\n[04:00.380]勇敢是什么\n[04:05.380]‘间奏’`; // 你的歌词字符串
 
-// 处理歌词字符串，转换为时间戳和文本的数组
-function parseLyric(lyric) {
-  var lines = lyric.split("\n");
-  var lyricsArray = [];
-  for (var i = 0; i < lines.length; i++) {
-    var timeTextPair = lines[i].split("]"); // 分割时间戳和文本
-    var timeParts = timeTextPair[0].substr(1).split(":"); // 去除前缀并分割时间
-    var seconds = parseInt(timeParts[1]) * 60 + parseFloat(timeParts[2]); // 转换为秒
-    lyricsArray.push([seconds, timeTextPair[1].trim()]);
-  }
-  return lyricsArray;
-}
-
-var musicLyricContent = parseLyric(musicLyric);
+// 将歌词字符串转换为时间戳和文本的数组
+var musicLyricContent = musicLyric.split('\n').map(function(line) {
+  var parts = line.trim().split(']');
+  var timeStr = parts[0].substring(1);
+  var timeParts = timeStr.split(':');
+  var m = parseInt(timeParts[0], 10);
+  var s = parseInt(timeParts[1].split('.')[0], 10);
+  var ms = parseInt(timeParts[1].split('.')[1], 10) * 10;
+  var time = (m * 60 + s) * 1000 + ms;
+  return [time, parts[1] || ''];
+}).filter(function(item) {
+  return item[1].length > 0; // 过滤掉空行
+}).sort(function(a, b) {
+  return a[0] - b[0]; // 确保按时间排序
+});
 
 var musicLyricId = document.getElementById("subtitle");
 var musicPlayerId = document.getElementById("audio");
 
 // 更新音乐播放时间的函数
 function updateMusicTime() {
-  musicCurrentTime = musicPlayerId.currentTime;
+  musicCurrentTime = musicPlayerId.currentTime * 1000; // 转换为毫秒
   musicShow();
 }
 
 // 显示歌词的函数
 function musicShow() {
-  for (var i = 0; i < musicLyricContent.length; i++) {
+  // 找到当前时间对应的歌词行
+  for (var i = musicCurrentLine + 1; i < musicLyricContent.length; i++) {
     if (musicLyricContent[i][0] > musicCurrentTime) {
-      musicCurrentLine = i - 1;
       break;
-    } else if (i === musicLyricContent.length - 1) {
-      musicCurrentLine = musicLyricContent.length - 1;
     }
+    musicCurrentLine = i;
   }
   
-  // 检查是否需要重置歌词行，以支持循环
-  if (musicCurrentTime >= musicLyricContent[musicLyricContent.length - 1][0]) {
-    musicCurrentLine = -1; // 重置为-1，以便重新开始
+  // 如果当前时间小于第一句歌词的时间，或者大于最后一句歌词的时间，重置为第一句歌词
+  if (musicCurrentTime < musicLyricContent[0][0] || musicCurrentTime > musicLyricContent[musicLyricContent.length - 1][0]) {
+    musicCurrentLine = 0;
   }
   
-  musicLyricId.innerHTML = musicLyricContent[musicCurrentLine][1] || "歌词载入ing";
-  musicLyricId.style.color = "rgba(249, 244, 220, " + musicOpacity + ")";
+  // 更新歌词显示
+  musicLyricId.innerHTML = musicLyricContent[musicCurrentLine][1];
+  musicLyricId.style.color = musicOpacity;
   
+  // 淡入效果
   if (musicOpacity < 1) {
-    musicOpacity += 0.05; // 调整淡入速度
-  } else {
-    setTimeout(function () { musicHide(); }, 800); // 歌词显示一定时间后开始淡出
-  }
-}
-
-// 歌词淡出效果的函数
-var musicHideTimer;
-function musicHide() {
-  if (musicOpacity > 0) {
-    musicOpacity -= 0.05; // 调整淡出速度
-    musicLyricId.style.color = "rgba(249, 244, 220, " + musicOpacity + ")";
-    musicHideTimer = setTimeout(musicHide, 50); // 继续淡出
-  } else {
-    clearTimeout(musicHideTimer); // 停止淡出
+    musicOpacity += 0.1;
+    setTimeout(function() { musicShow(); }, 50); // 调整淡入速度
   }
 }
 
@@ -344,7 +334,11 @@ function musicHide() {
 musicPlayerId.onended = function() {
   // 重置音乐播放时间，让音乐重新开始
   musicPlayerId.currentTime = 0;
-  // 立即调用musicShow函数，以显示第一行歌词
+  // 重置歌词行
+  musicCurrentLine = 0;
+  // 重置透明度
+  musicOpacity = 1;
+  // 更新歌词显示
   musicShow();
 };
 
@@ -352,7 +346,7 @@ musicPlayerId.onended = function() {
 setInterval(updateMusicTime, 50);
 
 // 启动歌词显示
-setTimeout(function () { musicShow(); }, 10);
+setTimeout(function() { musicShow(); }, 100);
 
 // 设置结束时间的时间戳
 var endTime = new Date("2024/06/07 09:00:00").getTime();
