@@ -367,6 +367,20 @@ $(function()
 				musicShow();
 			}
 		};
+// 音乐播放结束时触发的事件
+musicPlayerId.onended = function() {
+  musicCurrentLine = -1; // 重置当前歌词行
+  musicShow(); // 重新开始显示歌词
+};
+
+// 修改musicShow函数以检查是否需要循环
+function musicShow() {
+  if (musicCurrentLine >= musicLyricContent.length - 1 && musicPlayerId.currentTime >= musicPlayerId.duration) {
+    // 如果当前是最后一行且音乐播放结束，则重置当前行并重新开始
+    musicCurrentLine = -1;
+    musicPlayerId.currentTime = 0; // 重置音乐播放时间到开始
+  }
+
 // 设置结束时间的时间戳
 var endTime = new Date("2024/06/07 09:00:00").getTime();
 
