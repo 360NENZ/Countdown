@@ -366,7 +366,6 @@ $(function()
 			}else{
 				musicShow();
 			}
-		};
 // 音乐播放结束时触发的事件
 musicPlayerId.onended = function() {
   musicCurrentLine = -1; // 重置当前歌词行
@@ -380,6 +379,8 @@ function musicShow() {
     musicCurrentLine = -1;
     musicPlayerId.currentTime = 0; // 重置音乐播放时间到开始
   }
+		};
+
 
 // 设置结束时间的时间戳
 var endTime = new Date("2024/06/07 09:00:00").getTime();
