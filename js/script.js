@@ -276,25 +276,20 @@ $(function()
 var musicLyric = "[00:00.000]牛奶咖啡 - 明天，你好\n[00:01.000]作曲 : 王海涛\n[00:03.000]作词 : 牛奶咖啡\n[00:05.000]'间奏'\n[00:23.080]看昨天的我们 走远了\n[00:28.030]在命运广场中央 等待\n[00:33.470]那模糊的 肩膀\n[00:36.310]越奔跑 越渺小\n[00:43.130]曾经 并肩往前的 伙伴\n[00:48.090]在举杯祝福后都 走散\n[00:53.500]只是那个 夜晚\n[00:56.300]我深深 的都留藏在心坎\n[01:00.710]长大以后 我只能奔跑\n[01:05.660]我多害怕 黑暗中跌倒\n[01:10.590]明天你好 含着泪微笑\n[01:15.930]越美好 越害怕得到\n[01:20.610]每一次哭 又笑着奔跑\n[01:25.630]一边失去 一边在寻找\n[01:30.500]明天你好 声音多渺小\n[01:35.570]却提醒我 勇敢是什么\n[02:03.130]当我朝着反方向走去\n[02:07.990]在楼梯的角落 找勇气\n[02:13.450]抖着肩膀 哭泣\n[02:16.260]问自己 在哪里\n[02:23.070]曾经 并肩往前 的伙伴\n[02:28.050]沉默着 懂得我的委屈\n[02:33.480]时间它总说谎\n[02:36.230]我从 不曾失去 那些肩膀\n[02:40.580]长大以后 我只能奔跑\n[02:45.510]我多害怕 黑暗中跌倒\n[02:50.480]明天你好 含着泪微笑\n[02:56.080]越美好 越害怕得到\n[03:00.530]每一次哭 又笑着奔跑\n[03:05.520]一边失去 一边在寻找\n[03:10.490]明天你好 声音多渺小\n[03:15.660]却提醒我\n[03:20.620]长大以后 我只能奔跑\n[03:25.590]我多害怕 黑暗中跌倒\n[03:30.590]明天你好 含着泪微笑\n[03:36.010]越美好 越害怕得到\n[03:40.380]每一次哭 又笑着奔跑\n[03:45.560]一边失去 一边在寻找\n[03:50.520]明天你好 声音多渺小\n[03:55.570]却提醒我\n[04:00.380]勇敢是什么";
 
 
-// 正则表达式用于匹配LRC格式的时间戳和歌词文本
-var lyricPattern = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
-
 // 将LRC歌词字符串转换为时间戳和文本的数组
 function parseLyrics(lyricsText) {
   return lyricsText.split('\n').map(function (line) {
-    var match = line.match(lyricPattern);
+    const match = line.match(/\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/);
     if (!match) return null;
-    var mm = parseInt(match[1], 10);
-    var ss = parseInt(match[2], 10);
-    var ms = parseInt((match[3] + '00').substring(0, 3), 10); // 确保毫秒为3位数
-    var timestamp = mm * 60000 + ss * 1000 + ms;
+    const mm = parseInt(match[1], 10);
+    const ss = parseInt(match[2], 10);
+    const ms = parseInt(match[3], 10); // 毫秒部分已经是整数，无需额外处理
+    const timestamp = mm * 60 * 1000 + ss * 1000 + ms;
     return {
       timestamp: timestamp,
       text: match[4].trim()
     };
-  }).filter(function (item) {
-    return item !== null;
-  });
+  }).filter(Boolean); // 过滤掉null值
 }
 
 var musicLyricContent = parseLyrics(musicLyric);
@@ -304,44 +299,42 @@ var currentLineIndex = 0;
 
 // 更新歌词显示的函数
 function updateLyricDisplay() {
-  const currentTime = musicPlayer.currentTime * 1000; // 转换为毫秒
-  let newLineIndex = currentLineIndex;
+  const currentTime = Math.floor(musicPlayer.currentTime * 1000); // 取整到最近的毫秒
 
-  // 查找当前时间点应该显示的歌词行
-  for (let i = newLineIndex; i < musicLyricContent.length; i++) {
-    if (musicLyricContent[i].timestamp > currentTime) {
-      break;
-    }
-    newLineIndex = i;
+  // 检查是否需要更新歌词行
+  while (currentLineIndex < musicLyricContent.length - 1 && 
+         musicLyricContent[currentLineIndex + 1].timestamp <= currentTime) {
+    currentLineIndex++;
   }
 
-  // 如果歌词行发生变化，则更新显示
-  if (newLineIndex !== currentLineIndex) {
-    currentLineIndex = newLineIndex;
-    musicLyricDisplay.textContent = musicLyricContent[currentLineIndex].text;
-  }
+  // 更新歌词显示
+  musicLyricDisplay.textContent = musicLyricContent[currentLineIndex].text;
 
-  // 如果音乐未结束，继续更新歌词
+  // 如果音乐未结束，继续递归更新歌词
   if (!musicPlayer.ended) {
     requestAnimationFrame(updateLyricDisplay);
+  } else {
+    // 音乐结束时重置歌词索引，准备下一次播放
+    currentLineIndex = 0;
   }
 }
 
-// 当音乐播放结束时重置歌词到第一行并重新开始
-musicPlayer.addEventListener('ended', function() {
-  musicPlayer.currentTime = 0; // 重置音乐播放时间
-  updateLyricDisplay(); // 立即更新歌词显示为第一行
+// 音乐播放时绑定事件
+musicPlayer.addEventListener('play', function() {
+  currentLineIndex = 0; // 重置当前歌词行索引
+  updateLyricDisplay(); // 开始更新歌词
 });
 
-// 音乐播放开始时启动歌词更新
-musicPlayer.addEventListener('play', updateLyricDisplay);
+// 音乐播放结束时重置歌词
+musicPlayer.addEventListener('ended', function() {
+  musicPlayer.currentTime = 0; // 重置音乐播放时间
+});
 
 // 初始化歌词显示
 if (musicLyricContent.length > 0) {
   musicLyricDisplay.textContent = musicLyricContent[0].text;
-}
-// 设置结束时间的时间戳
-var endTime = new Date("2024/06/09 09:00:00").getTime();
+}// 设置结束时间的时间戳
+var endTime = new Date("2024/06/09 09:00:00").getTime(); //在调试歌词显示
 
 // 弹窗提示
 function showPopup() {
