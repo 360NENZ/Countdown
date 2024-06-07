@@ -298,7 +298,7 @@ var musicLyricDisplay = document.getElementById('subtitle');
 var currentLineIndex = 0;
 
 // 更新歌词显示的函数
-
+currentLineIndex = 0;
 function updateLyricDisplay() {
   const currentTime = Math.floor(musicPlayer.currentTime * 1000); // 取整到最近的毫秒
 
@@ -328,7 +328,7 @@ musicPlayer.addEventListener('play', function() {
 
 // 音乐播放结束时重置歌词
 musicPlayer.addEventListener('ended', function() {
-  musicPlayer.currentTime = 1; // 重置音乐播放时间
+  musicPlayer.currentTime = 0; // 重置音乐播放时间
 });
 
 // 初始化歌词显示
