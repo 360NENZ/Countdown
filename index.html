@@ -358,12 +358,12 @@ h1 {
 <main>
     <section class="panel" aria-label="高考倒计时">
         <h1>高考倒计时</h1>
-        <p class="kicker">距离 2026 年高考开始还有</p>
+        <p id="kicker" class="kicker">距离 2026 年高考开始还有</p>
         <div id="timer" class="countdown">正在计算……</div>
         <div id="slogan" class="slogan">愿你笔锋所至，皆是心之所向</div>
         <div class="info">
-            <div>开始时间：2026 年 6 月 7 日 09:00:00</div>
-            <div>结束时间：2026 年 6 月 9 日 18:15:00</div>
+            <div id="start-info">开始时间：2026 年 6 月 7 日 09:00:00</div>
+            <div id="end-info">结束时间：2026 年 6 月 9 日 18:15:00</div>
             <div>
                 <a href="https://www.tsa.cn/" rel="nofollow">国家授时中心标准时间</a>
                 北京时间：
@@ -376,28 +376,30 @@ h1 {
 </main>
 
 <script>
-const startTime = new Date("2026-06-07T09:00:00+08:00");
-const endTime = new Date("2026-06-09T18:15:00+08:00");
-const examSchedule = [
-    { subject: "语文", start: "2026-06-07T09:00:00+08:00", end: "2026-06-07T11:30:00+08:00" },
-    { subject: "数学", start: "2026-06-07T15:00:00+08:00", end: "2026-06-07T17:00:00+08:00" },
-    { subject: "物理或历史", start: "2026-06-08T09:00:00+08:00", end: "2026-06-08T10:15:00+08:00" },
-    { subject: "外语（含听力）", start: "2026-06-08T15:00:00+08:00", end: "2026-06-08T17:00:00+08:00" },
-    { subject: "化学", start: "2026-06-09T08:30:00+08:00", end: "2026-06-09T09:45:00+08:00" },
-    { subject: "地理", start: "2026-06-09T11:00:00+08:00", end: "2026-06-09T12:15:00+08:00" },
-    { subject: "思想政治", start: "2026-06-09T14:30:00+08:00", end: "2026-06-09T15:45:00+08:00" },
-    { subject: "生物", start: "2026-06-09T17:00:00+08:00", end: "2026-06-09T18:15:00+08:00" }
-].map(exam => ({
-    ...exam,
-    startTime: new Date(exam.start),
-    endTime: new Date(exam.end)
-}));
+const scheduleTemplate = [
+    { subject: "语文", day: 7, start: "09:00", end: "11:30" },
+    { subject: "数学", day: 7, start: "15:00", end: "17:00" },
+    { subject: "物理或历史", day: 8, start: "09:00", end: "10:15" },
+    { subject: "外语（含听力）", day: 8, start: "15:00", end: "17:00" },
+    { subject: "化学", day: 9, start: "08:30", end: "09:45" },
+    { subject: "地理", day: 9, start: "11:00", end: "12:15" },
+    { subject: "思想政治", day: 9, start: "14:30", end: "15:45" },
+    { subject: "生物", day: 9, start: "17:00", end: "18:15" }
+];
+let examYear = 2026;
+let startTime = new Date("2026-06-07T09:00:00+08:00");
+let endTime = new Date("2026-06-09T18:15:00+08:00");
+let examSchedule = [];
 const timerEl = document.getElementById("timer");
+const kickerEl = document.getElementById("kicker");
+const startInfoEl = document.getElementById("start-info");
+const endInfoEl = document.getElementById("end-info");
 const sloganEl = document.getElementById("slogan");
 const beijingTimeEl = document.getElementById("Beijing_z43d");
 const localDateEl = document.getElementById("local-date");
 const statusEl = document.getElementById("status");
 const params = new URLSearchParams(window.location.search);
+const yearParam = Number(params.get("year") || params.get("gaokaoYear"));
 const customSlogan = params.get("slogan");
 const sloganText = (customSlogan || sloganEl.textContent).slice(0, 80);
 renderSlogan(sloganText);
@@ -406,6 +408,51 @@ let timeOffset = 0;
 
 function getCurrentTimeMs() {
     return Date.now() + timeOffset;
+}
+
+function buildDate(year, month, day, time) {
+    return new Date(`${year}-${pad(month)}-${pad(day)}T${time}:00+08:00`);
+}
+
+function getBeijingYear(nowMs) {
+    return new Date(nowMs + 8 * 60 * 60 * 1000).getUTCFullYear();
+}
+
+function resolveExamYear(nowMs) {
+    if (Number.isInteger(yearParam) && yearParam >= 2000 && yearParam <= 2100) {
+        return yearParam;
+    }
+
+    const currentYear = getBeijingYear(nowMs);
+    const currentYearEnd = buildDate(currentYear, 6, 9, "18:15");
+
+    return nowMs <= currentYearEnd.getTime() ? currentYear : currentYear + 1;
+}
+
+function buildExamSchedule(year) {
+    return scheduleTemplate.map(exam => ({
+        ...exam,
+        startTime: buildDate(year, 6, exam.day, exam.start),
+        endTime: buildDate(year, 6, exam.day, exam.end)
+    }));
+}
+
+function applyExamYear(year) {
+    if (year === examYear && examSchedule.length) {
+        return;
+    }
+
+    examYear = year;
+    startTime = buildDate(year, 6, 7, "09:00");
+    endTime = buildDate(year, 6, 9, "18:15");
+    examSchedule = buildExamSchedule(year);
+    kickerEl.textContent = `距离 ${year} 年高考开始还有`;
+    startInfoEl.textContent = `开始时间：${year} 年 6 月 7 日 09:00:00`;
+    endInfoEl.textContent = `结束时间：${year} 年 6 月 9 日 18:15:00`;
+}
+
+function updateExamYear(nowMs) {
+    applyExamYear(resolveExamYear(nowMs));
 }
 
 function isMobileLayout() {
@@ -523,6 +570,7 @@ function renderExamPanel(nowMs, currentExam) {
 }
 
 function renderCountdown(nowMs) {
+    updateExamYear(nowMs);
     const diff = startTime.getTime() - nowMs;
 
     if (nowMs >= endTime.getTime()) {
