@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高考倒计时</title>
+<style>
+@font-face {
+    font-family: "MapleMono";
+    src: url("fonts/MapleMono-NF-CN/MapleMono-NF-CN-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 214, 92, 0.42), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(255, 103, 103, 0.22), transparent 30%),
+        linear-gradient(135deg, #fff9e8 0%, #fff3d2 42%, #ffe6dc 100%);
+    color: #1f2430;
+    font-family: "MapleMono";
+    overflow: hidden;
+}
+
+body * {
+    font-family: "MapleMono";
+}
+
+main {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(12px, 3vh, 28px) 32px;
+    text-align: center;
+}
+
+.panel {
+    width: min(1180px, calc(100vw - 32px));
+    padding: clamp(16px, 3.2vh, 34px) clamp(18px, 4vw, 36px);
+    transition: transform 240ms ease;
+}
+
+body.exam-active .panel {
+    transform: translateY(clamp(-48px, -5vh, -24px));
+}
+
+.kicker {
+    margin: 0 0 clamp(10px, 2vh, 18px);
+    color: #9d3a25;
+    font-size: clamp(16px, 2vw, 22px);
+    letter-spacing: 0.12em;
+}
+
+h1 {
+    margin: 0 0 clamp(10px, 2vh, 18px);
+    color: #28160d;
+    font-size: clamp(34px, 6vw, 72px);
+    line-height: 1.1;
+}
+
+.countdown {
+    margin: clamp(12px, 2.2vh, 22px) auto;
+    color: #8f4a19;
+    font-size: clamp(28px, 7.4vw, 92px);
+    font-weight: 400;
+    line-height: 1.05;
+    text-shadow: 0 10px 28px rgba(143, 74, 25, 0.16);
+    white-space: nowrap;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.28em;
+    width: 100%;
+    transition: color 240ms ease, text-shadow 240ms ease;
+}
+
+.countdown-group {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.08em;
+}
+
+.countdown-number {
+    display: block;
+    width: 2ch;
+    min-width: 0;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.countdown-days .countdown-number {
+    width: 3ch;
+}
+
+.countdown-unit {
+    display: block;
+    color: #b86b2f;
+    font-family: "MapleMono";
+    font-size: 0.46em;
+    line-height: 1;
+    text-align: center;
+    text-shadow: none;
+    transition: color 240ms ease;
+}
+
+.countdown-urgent {
+    color: #ff2d2d;
+    text-shadow: 0 10px 28px rgba(255, 45, 45, 0.22);
+}
+
+.countdown-urgent .countdown-unit {
+    color: #ff6b6b;
+}
+
+.countdown-ended {
+    display: block;
+    width: auto;
+    text-align: center;
+}
+
+.ended-title {
+    display: block;
+}
+
+.ended-blessing {
+    display: block;
+    margin-top: clamp(14px, 2.2vh, 22px);
+    color: #c9161d;
+    font-size: clamp(24px, 3.4vw, 46px);
+    line-height: 1.25;
+    text-shadow: 0 12px 30px rgba(201, 22, 29, 0.18);
+}
+
+.exam-panel {
+    display: grid;
+    gap: clamp(6px, 1vh, 10px);
+    margin: clamp(12px, 2vh, 18px) auto 0;
+    color: #7a3d18;
+    font-size: clamp(16px, 2vw, 26px);
+    line-height: 1.22;
+}
+
+.current-exam,
+.next-exam,
+.finished-exams {
+    display: grid;
+    gap: clamp(3px, 0.7vh, 6px);
+}
+
+.exam-subject {
+    color: #c9161d;
+    font-size: 1.18em;
+}
+
+.exam-label {
+    color: #9d3a25;
+    font-size: 0.72em;
+    letter-spacing: 0.08em;
+}
+
+.exam-meta,
+.exam-left,
+.finished-list {
+    font-size: 0.76em;
+}
+
+.finished-list {
+    color: #8a6a56;
+}
+
+.slogan {
+    margin: clamp(16px, 2.6vh, 26px) auto 0;
+    padding: clamp(10px, 1.7vh, 14px) 22px;
+    color: #9d3a25;
+    font-size: clamp(20px, 3vw, 40px);
+    line-height: 1.35;
+    letter-spacing: 0.08em;
+    text-shadow: 0 10px 24px rgba(157, 58, 37, 0.14);
+    border-top: 1px solid rgba(157, 58, 37, 0.22);
+    border-bottom: 1px solid rgba(157, 58, 37, 0.22);
+}
+
+.info {
+    display: grid;
+    gap: clamp(5px, 1vh, 9px);
+    margin-top: clamp(14px, 2.4vh, 24px);
+    color: #5d4636;
+    font-size: clamp(14px, 1.8vw, 18px);
+    line-height: 1.38;
+}
+
+.info a,
+.info a:visited {
+    color: #c9161d;
+    text-decoration: none;
+}
+
+.status {
+    color: #8a6a56;
+    font-size: clamp(13px, 1.6vw, 16px);
+}
+
+@media (max-height: 760px) {
+    body.exam-active .panel {
+        transform: translateY(clamp(-72px, -8vh, -36px));
+    }
+
+    .panel {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    h1 {
+        font-size: clamp(30px, 5vw, 58px);
+    }
+
+    .countdown {
+        font-size: clamp(26px, 6.4vw, 72px);
+    }
+
+    .ended-blessing {
+        font-size: clamp(20px, 2.7vw, 34px);
+    }
+
+    .exam-panel {
+        gap: 4px;
+        font-size: clamp(15px, 1.8vw, 22px);
+    }
+
+    .slogan {
+        font-size: clamp(18px, 2.4vw, 32px);
+    }
+}
+
+@media (max-width: 640px) {
+    main {
+        padding: 10px;
+    }
+
+    .panel {
+        width: calc(100vw - 20px);
+        padding: 30px 10px;
+    }
+}
+</style>
+</head>
+<body>
+<main>
+    <section class="panel" aria-label="高考倒计时">
+        <h1>高考倒计时</h1>
+        <p class="kicker">距离 2026 年高考开始还有</p>
+        <div id="timer" class="countdown">正在计算……</div>
+        <div class="slogan">高三6班 众志成城 决战高考 我辈必赢</div>
+        <div class="info">
+            <div>开始时间：2026 年 6 月 7 日 09:00:00</div>
+            <div>结束时间：2026 年 6 月 9 日 18:15:00</div>
+            <div>
+                <a href="https://www.tsa.cn/" rel="nofollow">国家授时中心标准时间</a>
+                北京时间：
+                <span id="Beijing_z43d">正在获取……</span>
+            </div>
+            <div id="local-date">本地日期：正在读取……</div>
+            <div id="status" class="status">时间来源：国家授时中心标准时间；倒计时每秒刷新。</div>
+        </div>
+    </section>
+</main>
+
+<script>
+const startTime = new Date("2026-06-07T09:00:00+08:00");
+const endTime = new Date("2026-06-09T18:15:00+08:00");
+const examSchedule = [
+    { subject: "语文", start: "2026-06-07T09:00:00+08:00", end: "2026-06-07T11:30:00+08:00" },
+    { subject: "数学", start: "2026-06-07T15:00:00+08:00", end: "2026-06-07T17:00:00+08:00" },
+    { subject: "物理或历史", start: "2026-06-08T09:00:00+08:00", end: "2026-06-08T10:15:00+08:00" },
+    { subject: "外语（含听力）", start: "2026-06-08T15:00:00+08:00", end: "2026-06-08T17:00:00+08:00" },
+    { subject: "化学", start: "2026-06-09T08:30:00+08:00", end: "2026-06-09T09:45:00+08:00" },
+    { subject: "地理", start: "2026-06-09T11:00:00+08:00", end: "2026-06-09T12:15:00+08:00" },
+    { subject: "思想政治", start: "2026-06-09T14:30:00+08:00", end: "2026-06-09T15:45:00+08:00" },
+    { subject: "生物", start: "2026-06-09T17:00:00+08:00", end: "2026-06-09T18:15:00+08:00" }
+].map(exam => ({
+    ...exam,
+    startTime: new Date(exam.start),
+    endTime: new Date(exam.end)
+}));
+const timerEl = document.getElementById("timer");
+const beijingTimeEl = document.getElementById("Beijing_z43d");
+const localDateEl = document.getElementById("local-date");
+const statusEl = document.getElementById("status");
+let timeOffset = 0;
+
+function getCurrentTimeMs() {
+    return Date.now() + timeOffset;
+}
+
+function pad(value) {
+    return String(value).padStart(2, "0");
+}
+
+function formatCountdownGroup(value, unit, className = "") {
+    return `<span class="countdown-group ${className}"><span class="countdown-number">${value}</span><span class="countdown-unit">${unit}</span></span>`;
+}
+
+function formatClock(date) {
+    return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function formatDuration(ms) {
+    const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${pad(hours)}时${pad(minutes)}分${pad(seconds)}秒`;
+}
+
+function getCurrentExam(nowMs) {
+    return examSchedule.find(exam => nowMs >= exam.startTime.getTime() && nowMs < exam.endTime.getTime());
+}
+
+function getFinishedExams(nowMs) {
+    return examSchedule.filter(exam => nowMs >= exam.endTime.getTime());
+}
+
+function getNextExam(nowMs) {
+    return examSchedule.find(exam => nowMs < exam.startTime.getTime());
+}
+
+function renderExamPanel(nowMs, currentExam) {
+    const finishedExams = getFinishedExams(nowMs);
+    const nextExam = currentExam ? null : getNextExam(nowMs);
+    const finishedHtml = finishedExams.length ? `
+        <span class="finished-exams">
+            <span class="exam-label">已考完</span>
+            <span class="finished-list">${finishedExams.map(exam => exam.subject).join("、")}</span>
+        </span>` : "";
+    const activeHtml = currentExam ? `
+        <span class="current-exam">
+            <span class="exam-label">正在考</span>
+            <span class="exam-subject">${currentExam.subject}</span>
+            <span class="exam-meta">${formatClock(currentExam.startTime)} - ${formatClock(currentExam.endTime)}</span>
+            <span class="exam-left">本科剩余：${formatDuration(currentExam.endTime.getTime() - nowMs)}</span>
+        </span>` : "";
+    const nextHtml = nextExam ? `
+        <span class="next-exam">
+            <span class="exam-label">下一科</span>
+            <span class="exam-subject">${nextExam.subject}</span>
+            <span class="exam-meta">${formatClock(nextExam.startTime)} - ${formatClock(nextExam.endTime)}</span>
+        </span>` : "";
+
+    return `<span class="exam-panel">${finishedHtml}${activeHtml}${nextHtml}</span>`;
+}
+
+function renderCountdown(nowMs) {
+    const diff = startTime.getTime() - nowMs;
+
+    if (nowMs >= endTime.getTime()) {
+        document.body.classList.remove("exam-active");
+        timerEl.classList.remove("countdown-urgent");
+        timerEl.classList.add("countdown-ended");
+        timerEl.innerHTML = `<span class="ended-title">高考已结束</span><span class="ended-blessing">愿你前程似锦，得偿所愿。</span>`;
+        return;
+    }
+
+    if (diff <= 0) {
+        const currentExam = getCurrentExam(nowMs);
+        const examHtml = renderExamPanel(nowMs, currentExam);
+        document.body.classList.add("exam-active");
+
+        timerEl.classList.remove("countdown-urgent");
+        timerEl.classList.add("countdown-ended");
+        timerEl.innerHTML = `<span class="ended-title">高考已开始</span>${examHtml}<span class="ended-blessing">祝你落笔生花，旗开得胜。</span>`;
+        return;
+    }
+
+    document.body.classList.remove("exam-active");
+    timerEl.classList.remove("countdown-ended");
+
+    const totalSeconds = Math.ceil(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    timerEl.classList.toggle("countdown-urgent", days <= 10);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    timerEl.innerHTML = [
+        formatCountdownGroup(String(days).padStart(3, "0"), "天", "countdown-days"),
+        formatCountdownGroup(pad(hours), "时"),
+        formatCountdownGroup(pad(minutes), "分"),
+        formatCountdownGroup(pad(seconds), "秒")
+    ].join("");
+}
+
+function renderLocalDate(nowMs) {
+    const formatter = new Intl.DateTimeFormat("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long"
+    });
+
+    localDateEl.textContent = `北京时间日期：${formatter.format(new Date(nowMs))}`;
+}
+
+function renderBeijingTime(nowMs) {
+    const formatter = new Intl.DateTimeFormat("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    });
+
+    beijingTimeEl.textContent = formatter.format(new Date(nowMs));
+}
+
+function tick() {
+    const nowMs = getCurrentTimeMs();
+    renderCountdown(nowMs);
+    renderBeijingTime(nowMs);
+}
+
+function renderMinuteInfo() {
+    renderLocalDate(getCurrentTimeMs());
+}
+
+async function syncNationalTime() {
+    const requestedAt = Date.now();
+
+    try {
+        const proxyUrl = new URLSearchParams(window.location.search).get("timeProxy") || "https://time.360nenz.top/time";
+        const response = await fetch(proxyUrl, {
+            cache: "no-store"
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.ok || !Number.isFinite(Number(data.timeMs))) {
+            throw new Error(data.error || "Invalid proxy response");
+        }
+
+        const receivedAt = Date.now();
+        const serverTime = Number(data.timeMs);
+        timeOffset = serverTime + (receivedAt - requestedAt) / 2 - receivedAt;
+        statusEl.textContent = `时间来源：${data.source}；倒计时每秒刷新。`;
+        tick();
+        renderMinuteInfo();
+    } catch (error) {
+        timeOffset = 0;
+        statusEl.textContent = "本地时间代理未启动或不可用，当前使用本地系统时间刷新倒计时。";
+        tick();
+        renderMinuteInfo();
+    }
+}
+
+tick();
+renderMinuteInfo();
+syncNationalTime();
+window.setInterval(tick, 1000);
+window.setInterval(renderMinuteInfo, 60000);
+window.setInterval(syncNationalTime, 300000);
+</script>
+</body>
+</html>
