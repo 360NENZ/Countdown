@@ -202,6 +202,10 @@ h1 {
     border-bottom: 1px solid rgba(157, 58, 37, 0.22);
 }
 
+.slogan-line {
+    display: block;
+}
+
 .info {
     display: grid;
     gap: clamp(5px, 1vh, 9px);
@@ -311,6 +315,11 @@ h1 {
         padding: 10px 8px;
         font-size: clamp(18px, 6.2vw, 28px);
         letter-spacing: 0.04em;
+        line-height: 1.42;
+    }
+
+    .slogan-line + .slogan-line {
+        margin-top: 2px;
     }
 
     .info {
@@ -382,13 +391,45 @@ const localDateEl = document.getElementById("local-date");
 const statusEl = document.getElementById("status");
 const params = new URLSearchParams(window.location.search);
 const customSlogan = params.get("slogan");
-if (customSlogan) {
-    sloganEl.textContent = customSlogan.slice(0, 80);
-}
+renderSlogan((customSlogan || sloganEl.textContent).slice(0, 80));
 let timeOffset = 0;
 
 function getCurrentTimeMs() {
     return Date.now() + timeOffset;
+}
+
+function splitSlogan(value) {
+    const normalized = value.trim().replace(/\s+/g, " ");
+    if (!normalized) {
+        return [];
+    }
+
+    const sentenceParts = normalized.split(/(?<=[，。！？；,.!?;])\s*/).filter(Boolean);
+    if (sentenceParts.length > 1) {
+        return sentenceParts;
+    }
+
+    const spaceParts = normalized.split(" ").filter(Boolean);
+    if (spaceParts.length > 1) {
+        return spaceParts;
+    }
+
+    const compact = normalized.replace(/\s+/g, "");
+    if (compact.length === 16) {
+        return [compact.slice(0, 8), compact.slice(8)];
+    }
+
+    return [normalized];
+}
+
+function renderSlogan(value) {
+    const lines = splitSlogan(value);
+    sloganEl.replaceChildren(...lines.map(line => {
+        const span = document.createElement("span");
+        span.className = "slogan-line";
+        span.textContent = line;
+        return span;
+    }));
 }
 
 function pad(value) {
