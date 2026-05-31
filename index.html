@@ -399,17 +399,27 @@ const localDateEl = document.getElementById("local-date");
 const statusEl = document.getElementById("status");
 const params = new URLSearchParams(window.location.search);
 const customSlogan = params.get("slogan");
-renderSlogan((customSlogan || sloganEl.textContent).slice(0, 80));
+const sloganText = (customSlogan || sloganEl.textContent).slice(0, 80);
+renderSlogan(sloganText);
+window.addEventListener("resize", () => renderSlogan(sloganText));
 let timeOffset = 0;
 
 function getCurrentTimeMs() {
     return Date.now() + timeOffset;
 }
 
+function isMobileLayout() {
+    return window.matchMedia("(max-width: 640px) and (hover: none) and (pointer: coarse)").matches;
+}
+
 function splitSlogan(value) {
     const normalized = value.trim().replace(/\s+/g, " ");
     if (!normalized) {
         return [];
+    }
+
+    if (!isMobileLayout()) {
+        return [normalized];
     }
 
     const sentenceParts = normalized.split(/(?<=[，。！？；,.!?;])\s*/).filter(Boolean);
