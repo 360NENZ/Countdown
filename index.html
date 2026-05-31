@@ -226,6 +226,10 @@ h1 {
     font-size: clamp(13px, 1.6vw, 16px);
 }
 
+.status-refresh {
+    display: inline-block;
+}
+
 @media (max-height: 760px) {
     body.exam-active .panel {
         transform: translateY(clamp(-72px, -8vh, -36px));
@@ -328,6 +332,10 @@ h1 {
         font-size: clamp(12px, 3.6vw, 15px);
         line-height: 1.32;
     }
+
+    .status-refresh {
+        display: block;
+    }
 }
 
 @media (max-width: 380px) {
@@ -362,7 +370,7 @@ h1 {
                 <span id="Beijing_z43d">正在获取……</span>
             </div>
             <div id="local-date">本地日期：正在读取……</div>
-            <div id="status" class="status">时间来源：国家授时中心标准时间；倒计时每秒刷新。</div>
+            <div id="status" class="status"><span class="status-source">时间来源：国家授时中心标准时间</span><span class="status-refresh">倒计时每秒刷新。</span></div>
         </div>
     </section>
 </main>
@@ -409,14 +417,14 @@ function splitSlogan(value) {
         return sentenceParts;
     }
 
-    const spaceParts = normalized.split(" ").filter(Boolean);
-    if (spaceParts.length > 1) {
-        return spaceParts;
-    }
-
     const compact = normalized.replace(/\s+/g, "");
     if (compact.length === 16) {
         return [compact.slice(0, 8), compact.slice(8)];
+    }
+
+    const spaceParts = normalized.split(" ").filter(Boolean);
+    if (spaceParts.length > 1) {
+        return spaceParts;
     }
 
     return [normalized];
@@ -430,6 +438,20 @@ function renderSlogan(value) {
         span.textContent = line;
         return span;
     }));
+}
+
+function renderStatus(sourceText, refreshText = "倒计时每秒刷新。") {
+    statusEl.replaceChildren();
+
+    const source = document.createElement("span");
+    source.className = "status-source";
+    source.textContent = sourceText;
+
+    const refresh = document.createElement("span");
+    refresh.className = "status-refresh";
+    refresh.textContent = refreshText;
+
+    statusEl.append(source, refresh);
 }
 
 function pad(value) {
@@ -581,12 +603,12 @@ async function syncNationalTime() {
         const receivedAt = Date.now();
         const serverTime = Number(data.timeMs);
         timeOffset = serverTime + (receivedAt - requestedAt) / 2 - receivedAt;
-        statusEl.textContent = `时间来源：${data.source}；倒计时每秒刷新。`;
+        renderStatus(`时间来源：${data.source}`);
         tick();
         renderMinuteInfo();
     } catch (error) {
         timeOffset = 0;
-        statusEl.textContent = "本地时间代理未启动或不可用，当前使用本地系统时间刷新倒计时。";
+        renderStatus("本地时间代理未启动或不可用，当前使用本地系统时间", "倒计时每秒刷新。");
         tick();
         renderMinuteInfo();
     }
