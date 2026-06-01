@@ -7,15 +7,20 @@
 ```text
 .
 ├─ index.html
-└─ fonts/
-   └─ MapleMono-NF-CN/
-      └─ MapleMono-NF-CN-Regular.ttf
+└─ assets/
+   ├─ css/
+   │  └─ main.css
+   ├─ js/
+   │  └─ main.js
+   └─ fonts/
+      └─ MapleMono-NF-CN/
+         └─ MapleMono-NF-CN-Regular.ttf
 ```
 
 页面会优先从 CDN 加载字体：
 
 ```text
-https://cdn.jsdmirror.cn/gh/360NENZ/Countdown@CollegeEntranceExam/fonts/MapleMono-NF-CN/MapleMono-NF-CN-Regular.ttf
+https://cdn.jsdmirror.cn/gh/360NENZ/Countdown@CollegeEntranceExam/assets/fonts/MapleMono-NF-CN/MapleMono-NF-CN-Regular.ttf
 ```
 
 如果 CDN 不可用，会回退到本地字体文件。
