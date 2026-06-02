@@ -78,7 +78,7 @@ function updateExamYear(nowMs) {
 }
 
 function isMobileLayout() {
-    return window.matchMedia("(max-width: 640px) and (hover: none) and (pointer: coarse)").matches;
+    return window.matchMedia("(max-width: 640px)").matches;
 }
 
 function splitSlogan(value) {
