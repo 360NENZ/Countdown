@@ -8,6 +8,20 @@ const scheduleTemplate = [
     { subject: "思想政治", day: 9, start: "14:30", end: "15:45" },
     { subject: "生物", day: 9, start: "17:00", end: "18:15" }
 ];
+const blessingMessages = [
+    "愿你笔锋所至，皆是心之所向",
+    "愿你沉着落笔，奔赴心中山海",
+    "愿你合上笔盖，如剑客收剑入鞘",
+    "愿你所学皆有光，所答皆从容",
+    "愿你心有热望，笔下自有锋芒",
+    "愿你稳住心神，写下理想答案",
+    "愿你披星戴月，终能得偿所愿",
+    "愿你乘风破浪，一路繁花相送",
+    "愿你不负晨昏，奔向灿烂前程",
+    "愿你从容赴考，归来满身荣光",
+    "愿你眼有星河，笔下皆是坦途",
+    "愿你此去提笔，落纸皆成锦绣"
+];
 let examYear = 2026;
 let startTime = new Date("2026-06-07T09:00:00+08:00");
 let endTime = new Date("2026-06-09T18:15:00+08:00");
@@ -23,7 +37,8 @@ const statusEl = document.getElementById("status");
 const params = new URLSearchParams(window.location.search);
 const yearParam = Number(params.get("year") || params.get("gaokaoYear"));
 const customSlogan = params.get("slogan");
-const sloganText = (customSlogan || sloganEl.textContent).slice(0, 80);
+const randomBlessing = blessingMessages[Math.floor(Math.random() * blessingMessages.length)];
+const sloganText = (customSlogan || randomBlessing).slice(0, 80);
 renderSlogan(sloganText);
 window.addEventListener("resize", () => renderSlogan(sloganText));
 let timeOffset = 0;
