@@ -11,6 +11,7 @@
    ├─ css/
    │  └─ main.css
    ├─ js/
+   │  ├─ blessings.js
    │  └─ main.js
    └─ fonts/
       └─ MapleMono-NF-CN/
@@ -28,6 +29,8 @@ https://cdn.jsdmirror.cn/gh/360NENZ/Countdown@CollegeEntranceExam/assets/fonts/M
 ## 直接使用
 
 打开 `index.html` 即可使用。
+
+随机高考祝福语维护在 `assets/js/blessings.js` 中，页面每次加载自动随机显示一条。
 
 默认会从时间代理获取北京时间：
 
