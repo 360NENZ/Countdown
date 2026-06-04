@@ -213,10 +213,15 @@ h1 {
 }
 
 .status {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 1em;
     color: #8a6a56;
     font-size: clamp(13px, 1.6vw, 16px);
 }
 
+.status-source,
 .status-refresh {
     display: inline-block;
 }
