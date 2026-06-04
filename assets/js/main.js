@@ -79,8 +79,8 @@ function updateExamYear(nowMs) {
     applyExamYear(resolveExamYear(nowMs));
 }
 
-function isMobileLayout() {
-    return window.matchMedia("(max-width: 640px)").matches;
+function shouldSplitSlogan() {
+    return sloganEl.clientWidth < 720;
 }
 
 function splitSlogan(value) {
@@ -89,7 +89,7 @@ function splitSlogan(value) {
         return [];
     }
 
-    if (!isMobileLayout()) {
+    if (!shouldSplitSlogan()) {
         return [normalized];
     }
 
